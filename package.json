@@ -1,0 +1,49 @@
+{
+  "name": "tenantflow-saas",
+  "version": "1.0.0",
+  "description": "Multi-tenant B2B SaaS: Kafka event-driven orders, PostgreSQL RLS tenant isolation, query tuning, serverless invoices",
+  "main": "src/server.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "consumer": "node src/consumer.js",
+    "fn:dev": "node serverless/dev-server.js",
+    "db:migrate": "node scripts/migrate.js",
+    "db:seed": "node scripts/seed.js",
+    "db:setup": "node scripts/migrate.js && node scripts/seed.js",
+    "kafka:topic": "node scripts/kafka-admin.js topic",
+    "kafka:status": "node scripts/kafka-admin.js status",
+    "kafka:watch": "node scripts/kafka-admin.js watch",
+    "bench:explain": "node scripts/explain.js",
+    "bench:n1": "node scripts/n1-bench.js",
+    "bench:pool": "node scripts/pool-bench.js",
+    "bench:coldstart": "node scripts/coldstart-bench.js",
+    "index:drop": "node scripts/explain.js --drop",
+    "index:create": "node scripts/explain.js --create",
+    "explain": "node scripts/explain.js --once",
+    "test:isolation": "node scripts/isolation-test.js",
+    "load": "node scripts/load-orders.js",
+    "all": "concurrently -n fn,consumer,api -c yellow,cyan,green npm:fn:dev npm:consumer npm:dev"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "kafkajs": "^2.2.4",
+    "pg": "^8.23.1"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.7"
+  }
+}

@@ -1,0 +1,38 @@
+# Render Blueprint: API + frontend (+ embedded Kafka consumer on the free plan)
+services:
+  - type: web
+    name: tenantflow-api
+    runtime: node
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: RUN_CONSUMER_IN_API
+        value: "true"
+      - key: DATABASE_URL
+        sync: false
+      - key: DB_SSL
+        value: "true"
+      - key: KAFKA_BROKERS
+        sync: false
+      - key: KAFKA_SSL
+        value: "true"
+      - key: KAFKA_SASL_MECHANISM
+        value: scram-sha-256
+      - key: KAFKA_USERNAME
+        sync: false
+      - key: KAFKA_PASSWORD
+        sync: false
+      - key: KAFKA_CA_CERT
+        sync: false
+      - key: KAFKA_TOPIC
+        value: tenant.orders
+      - key: INVOICE_FUNCTION_URL
+        sync: false
+      - key: INVOICE_SECRET
+        sync: false

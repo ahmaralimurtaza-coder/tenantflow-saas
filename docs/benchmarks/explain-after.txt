@@ -1,0 +1,23 @@
+### Q1 latest 50 orders of a tenant
+Limit  (cost=0.42..13.05 rows=50 width=58) (actual time=0.011..0.037 rows=50 loops=1)
+  Buffers: shared hit=53
+  ->  Index Scan using idx_orders_tenant_created on orders  (cost=0.42..25375.14 rows=100493 width=58) (actual time=0.010..0.033 rows=50 loops=1)
+        Index Cond: (tenant_id = '3dedc6ef-ad5a-4dd1-9c32-73294baa318e'::uuid)
+        Buffers: shared hit=53
+Planning Time: 0.040 ms
+Execution Time: 0.046 ms
+
+### Q2 tenant orders in last 7 days
+Sort  (cost=4169.35..4173.99 rows=1855 width=28) (actual time=2.541..2.658 rows=1905 loops=1)
+  Sort Key: created_at DESC
+  Sort Method: quicksort  Memory: 153kB
+  Buffers: shared hit=1421
+  ->  Bitmap Heap Scan on orders  (cost=59.44..4068.65 rows=1855 width=28) (actual time=0.490..2.138 rows=1905 loops=1)
+        Recheck Cond: ((tenant_id = '3dedc6ef-ad5a-4dd1-9c32-73294baa318e'::uuid) AND (created_at >= (now() - '7 days'::interval)))
+        Heap Blocks: exact=1409
+        Buffers: shared hit=1421
+        ->  Bitmap Index Scan on idx_orders_tenant_created  (cost=0.00..58.98 rows=1855 width=0) (actual time=0.137..0.137 rows=1905 loops=1)
+              Index Cond: ((tenant_id = '3dedc6ef-ad5a-4dd1-9c32-73294baa318e'::uuid) AND (created_at >= (now() - '7 days'::interval)))
+              Buffers: shared hit=12
+Planning Time: 0.062 ms
+Execution Time: 2.789 ms

@@ -1,0 +1,37 @@
+### Q1 latest 50 orders of a tenant
+Limit  (cost=9578.50..9584.33 rows=50 width=58) (actual time=27.996..32.606 rows=50 loops=1)
+  Buffers: shared hit=6224
+  ->  Gather Merge  (cost=9578.50..19320.14 rows=83494 width=58) (actual time=27.993..32.597 rows=50 loops=1)
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=6224
+        ->  Sort  (cost=8578.47..8682.84 rows=41747 width=58) (actual time=23.743..23.751 rows=44 loops=3)
+              Sort Key: created_at DESC
+              Sort Method: top-N heapsort  Memory: 36kB
+              Buffers: shared hit=6224
+              Worker 0:  Sort Method: top-N heapsort  Memory: 36kB
+              Worker 1:  Sort Method: top-N heapsort  Memory: 35kB
+              ->  Parallel Seq Scan on orders  (cost=0.00..7191.67 rows=41747 width=58) (actual time=0.616..16.094 rows=33333 loops=3)
+                    Filter: (tenant_id = '3dedc6ef-ad5a-4dd1-9c32-73294baa318e'::uuid)
+                    Rows Removed by Filter: 33333
+                    Buffers: shared hit=6150
+Planning Time: 0.090 ms
+Execution Time: 32.636 ms
+
+### Q2 tenant orders in last 7 days
+Gather Merge  (cost=8855.71..9044.26 rows=1616 width=28) (actual time=19.859..21.503 rows=1905 loops=1)
+  Workers Planned: 2
+  Workers Launched: 2
+  Buffers: shared hit=6224
+  ->  Sort  (cost=7855.69..7857.71 rows=808 width=28) (actual time=15.512..15.566 rows=635 loops=3)
+        Sort Key: created_at DESC
+        Sort Method: quicksort  Memory: 72kB
+        Buffers: shared hit=6224
+        Worker 0:  Sort Method: quicksort  Memory: 53kB
+        Worker 1:  Sort Method: quicksort  Memory: 53kB
+        ->  Parallel Seq Scan on orders  (cost=0.00..7816.67 rows=808 width=28) (actual time=0.611..15.325 rows=635 loops=3)
+              Filter: ((tenant_id = '3dedc6ef-ad5a-4dd1-9c32-73294baa318e'::uuid) AND (created_at >= (now() - '7 days'::interval)))
+              Rows Removed by Filter: 66032
+              Buffers: shared hit=6150
+Planning Time: 0.116 ms
+Execution Time: 21.612 ms

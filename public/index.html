@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TenantFlow · Multi-Tenant Order Platform</title>
+<link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="logo">◆</span> TenantFlow <small>Kafka · Multi-Tenant SaaS</small></div>
+  <div id="who" class="who hidden">
+    <span id="tenantBadge" class="badge"></span>
+    <span id="userEmail" class="muted"></span>
+    <button id="logoutBtn" class="ghost">Log out</button>
+  </div>
+</header>
+
+<main>
+  <!-- LOGIN -->
+  <section id="loginView" class="card login">
+    <h1>Sign in to your workspace</h1>
+    <p class="muted">Tenant is resolved from the <code>x-tenant-id</code> header (or subdomain) at login, then from the JWT <code>tid</code> claim on every request.</p>
+    <form id="loginForm">
+      <label>Tenant<select id="tenantSelect"></select></label>
+      <label>Email<input id="email" type="email" required /></label>
+      <label>Password<input id="password" type="password" required /></label>
+      <button type="submit">Sign in</button>
+      <p id="loginErr" class="err"></p>
+    </form>
+    <div class="creds">
+      <div><b>Tenant A</b> · acme · admin@acme.test / TenantA@123</div>
+      <div><b>Tenant B</b> · globex · admin@globex.test / TenantB@123</div>
+    </div>
+  </section>
+
+  <!-- APP -->
+  <section id="appView" class="hidden">
+    <div class="grid">
+      <div class="card">
+        <h2>Place order <span class="tag">POST /api/v1/orders → 202</span></h2>
+        <form id="orderForm">
+          <label>Customer<input id="customer" value="Walk-in Customer" required /></label>
+          <div id="lines"></div>
+          <div class="row">
+            <button type="button" id="addLine" class="ghost">+ Line</button>
+            <button type="submit">Place order</button>
+            <button type="button" id="burst" class="ghost" title="Publishes 10 orders quickly">Burst ×10</button>
+          </div>
+        </form>
+        <pre id="orderResult" class="out">Response will appear here…</pre>
+      </div>
+
+      <div class="card">
+        <h2>Inventory <span class="tag">updated by Kafka consumer</span></h2>
+        <table id="productsTable"><thead><tr><th>SKU</th><th>Product</th><th>Price</th><th>Stock</th></tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Orders
+        <span class="seg">
+          <button data-mode="optimized" class="segbtn active">JOIN (optimized)</button>
+          <button data-mode="naive" class="segbtn">N+1 (naive)</button>
+        </span>
+        <span id="queryStats" class="tag"></span>
+      </h2>
+      <table id="ordersTable"><thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Kafka</th><th>Created</th><th></th></tr></thead><tbody></tbody></table>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>Consumer offsets <span class="tag">group: inventory-service</span></h2>
+        <table id="eventsTable"><thead><tr><th>Partition</th><th>Offset</th><th>Outcome</th><th>Latency</th><th>At</th></tr></thead><tbody></tbody></table>
+      </div>
+      <div class="card">
+        <h2>Serverless invoice worker <span class="tag">cold vs warm</span></h2>
+        <div id="invoiceSummary" class="stats"></div>
+        <table id="invoiceTable"><thead><tr><th>Order</th><th>Start</th><th>Function</th><th>Round-trip</th><th>Instance</th></tr></thead><tbody></tbody></table>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Performance lab</h2>
+      <div class="row">
+        <button id="n1Btn" class="ghost">Compare N+1 vs JOIN</button>
+        <button id="explainBtn" class="ghost">Run EXPLAIN ANALYZE</button>
+        <button id="poolBtn" class="ghost">Pool stats</button>
+      </div>
+      <pre id="labOut" class="out">…</pre>
+    </div>
+  </section>
+</main>
+<script src="/config.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>

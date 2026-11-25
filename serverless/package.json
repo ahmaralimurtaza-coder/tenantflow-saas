@@ -1,0 +1,10 @@
+{
+  "name": "tenantflow-invoice-worker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Serverless PDF invoice worker (Vercel) with cold/warm start instrumentation",
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "pdfkit": "^0.15.0"
+  }
+}
